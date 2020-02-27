@@ -13,7 +13,6 @@ Exit = False
 City = ''
 greetings = ['привет', 'ку', 'здорово', 'здравствуй']
 user_old = dict()
-STATE = 'idle'
 def send(mess):
     vk.messages.send(
         user_id=event.user_id,
@@ -159,7 +158,6 @@ for event in longpoll.listen():
                 StartKeyboard.add_button('Поменять Настройки', color=VkKeyboardColor.NEGATIVE)
                 StartKeyboard.add_button('Хочу погулять', color=VkKeyboardColor.POSITIVE)
                 send('Привет''&#128075;')
-                STATE = 'idle'
             elif event.text == 'пока':
                 send('Пока''&#128533;')
             elif event.text == 'спасибо':
@@ -212,7 +210,6 @@ for event in longpoll.listen():
 
         elif event.text == 'хочу погулять':
                 send('Минутку...')
-                STATE = 'ask'
                 StartKeyboard = VkKeyboard(one_time=True)
                 StartKeyboard.add_button('1', color=VkKeyboardColor.DEFAULT)
                 StartKeyboard.add_button('2', color=VkKeyboardColor.DEFAULT)
@@ -221,7 +218,6 @@ for event in longpoll.listen():
                 StartKeyboard.add_button('Поменять Настройки', color=VkKeyboardColor.PRIMARY)
                 StartKeyboard.add_button('Хочу погулять', color=VkKeyboardColor.POSITIVE)
                 Name = geo(get_names(Free, City, user_old[event.user_id]))
-                print(f'---- {Name} ----')
                 user_old[event.user_id].append(Name[0][0])
                 user_old[event.user_id].append(Name[1][0])
                 user_old[event.user_id].append(Name[2][0])
@@ -230,23 +226,29 @@ for event in longpoll.listen():
                 send('3 - ' + str(Name[2][0]))
 
         else:
-            if event.text == '1' and STATE == 'ask':
+            if event.text == '1':
                 send('Ok')
                 if len(Name[0]) == 3:
                     send(Name[0][0] + ': ' + '\n' + Name[0][2] + '\n' + Name[0][1])
                 else:
                     send(Name[0][0] + ': ' + '\n' + Name[0][1])
                 
-            if event.text == '2':
+            elif event.text == '2':
                 send('Ok')
                 if len(Name[1]) == 3:
                     send(Name[1][0] + ': ' + '\n' + Name[1][2] + '\n' + Name[1][1])
                 else:
                     send(Name[1][0] + ': ' + '\n' + Name[1][1])
 
-            if event.text == '3':
+            elif event.text == '3':
                 send('Ok')
                 if len(Name[2]) == 3:
                     send(Name[2][0] + ': ' + '\n' + Name[2][2] + '\n' + Name[2][1])
                 else:
                     send(Name[2][0] + ': ' + '\n' + Name[2][1])
+
+            else:
+
+                StartKeyboard = VkKeyboard(one_time=True)
+                StartKeyboard.add_button('Начать', color=VkKeyboardColor.DEFAULT)
+                send('Извини, не понял тебя. Напиши "начать" чтобы если хочешь сбросить диалог')
